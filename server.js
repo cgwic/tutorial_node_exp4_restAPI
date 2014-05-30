@@ -1,9 +1,10 @@
 var express = require("express");
 var app = express();
 var bodyParser = require("body-parser");
+var cfg = require("./hiddencfg/cfg.json");
 
 var mongoose   = require('mongoose');
-mongoose.connect('mongodb://node:node@novus.modulusmongo.net:27017/Iganiq8o'); 
+mongoose.connect(cfg.connectionString); 
 var Bear     = require('./app/models/bear');
 
 app.use(bodyParser());
@@ -24,6 +25,28 @@ router.route('/bears')
 				res.send(err);
             else
                 res.json(bears);
+		});
+	})
+	.post(function(req, res) {
+		var bear = new Bear(); 
+		bear.name = req.body.name;  // set the bears name (comes from the request)
+
+		// save the bear and check for errors
+		bear.save(function(err) {
+			if (err)
+                res.send(err);
+            else
+                res.json({ message: 'Bear "' + req.body.name + '" created!' });
+		});
+		
+	});
+router.route('/bears/:name')
+	.get(function(req, res) {
+		Bear.findOne({"name": req.params.name}, function(err, bear) {
+			if (err)
+				res.send(err);
+			else
+                res.json(bear);
 		});
 	});
 
