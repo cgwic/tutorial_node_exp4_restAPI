@@ -49,6 +49,14 @@ router.route('/bears/:name')
                 res.json(bear);
 		});
 	});
+	
+router.param('name', function(req, res, next, name){
+        if(!/bear/i.test(name)) {
+            res.end('Not valid name: ' + name); 
+        } else {
+            next();
+        }
+	})
 
 
 app.use('/api', router);
